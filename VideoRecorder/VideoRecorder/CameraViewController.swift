@@ -44,7 +44,7 @@ class CameraViewController: UIViewController {
 		captureSession.beginConfiguration()
 		
 		// Add the camera input
-		let camera = bestCamera()
+		let camera = bestBackCamera()
 		
 		guard let cameraInput = try? AVCaptureDeviceInput(device: camera) else {
 			fatalError("Cannot create a device input from camera")
@@ -69,8 +69,8 @@ class CameraViewController: UIViewController {
 		captureSession.commitConfiguration()
 		cameraView.session = captureSession
 	}
-	
-	private func bestCamera() -> AVCaptureDevice {
+
+	private func bestBackCamera() -> AVCaptureDevice {
 		if let device = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back) {
 			return device
 		} else if let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) {
@@ -79,6 +79,12 @@ class CameraViewController: UIViewController {
 		fatalError("ERROR: No cameras on the device or you are running on the Simulator")
 	}
 
+	private func bestFrontCamera() -> AVCaptureDevice {
+		if let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) {
+			return device
+		}
+		fatalError("ERROR: No cameras on the device or you are running on the Simulator")
+	}
 
     @IBAction func recordButtonPressed(_ sender: Any) {
 
