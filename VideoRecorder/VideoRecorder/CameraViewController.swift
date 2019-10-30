@@ -24,12 +24,27 @@ class CameraViewController: UIViewController {
 		setUpSession()
 	}
 	
+	override func viewWillAppear(_ animated: Bool) {
+		super.viewWillAppear(animated)
+		
+		print("Start capture session")
+		captureSession.startRunning()
+	}
+
+	override func viewDidDisappear(_ animated: Bool) {
+		super.viewDidDisappear(animated)
+		
+		print("Stop capture session")
+		captureSession.stopRunning()
+	}
+
+	
 	private func setUpSession() {
 		
 		captureSession.beginConfiguration()
 		
 		// Add the camera input
-		let camera = bestCamera()
+		let camera = bestBackCamera()
 		
 		guard let cameraInput = try? AVCaptureDeviceInput(device: camera) else {
 			fatalError("Cannot create a device input from camera")
@@ -42,16 +57,20 @@ class CameraViewController: UIViewController {
 		
 		
 		// Set video mode
+		if captureSession.canSetSessionPreset(.hd4K3840x2160) {
+			captureSession.sessionPreset = .hd4K3840x2160
+			print("4K support!!!")
+		}
 		
-		// Add the audio input
+		// TODO: Add the audio input
 		
+		// TODO: Add recording
 		
 		captureSession.commitConfiguration()
-		
-		// Start the session and show the live preview
+		cameraView.session = captureSession
 	}
-	
-	private func bestCamera() -> AVCaptureDevice {
+
+	private func bestBackCamera() -> AVCaptureDevice {
 		if let device = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back) {
 			return device
 		} else if let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) {
@@ -60,6 +79,12 @@ class CameraViewController: UIViewController {
 		fatalError("ERROR: No cameras on the device or you are running on the Simulator")
 	}
 
+	private func bestFrontCamera() -> AVCaptureDevice {
+		if let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) {
+			return device
+		}
+		fatalError("ERROR: No cameras on the device or you are running on the Simulator")
+	}
 
     @IBAction func recordButtonPressed(_ sender: Any) {
 
