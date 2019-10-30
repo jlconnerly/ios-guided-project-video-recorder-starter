@@ -24,6 +24,21 @@ class CameraViewController: UIViewController {
 		setUpSession()
 	}
 	
+	override func viewWillAppear(_ animated: Bool) {
+		super.viewWillAppear(animated)
+		
+		print("Start capture session")
+		captureSession.startRunning()
+	}
+
+	override func viewDidDisappear(_ animated: Bool) {
+		super.viewDidDisappear(animated)
+		
+		print("Stop capture session")
+		captureSession.stopRunning()
+	}
+
+	
 	private func setUpSession() {
 		
 		captureSession.beginConfiguration()
@@ -42,13 +57,17 @@ class CameraViewController: UIViewController {
 		
 		
 		// Set video mode
+		if captureSession.canSetSessionPreset(.hd4K3840x2160) {
+			captureSession.sessionPreset = .hd4K3840x2160
+			print("4K support!!!")
+		}
 		
-		// Add the audio input
+		// TODO: Add the audio input
 		
+		// TODO: Add recording
 		
 		captureSession.commitConfiguration()
-		
-		// Start the session and show the live preview
+		cameraView.session = captureSession
 	}
 	
 	private func bestCamera() -> AVCaptureDevice {
